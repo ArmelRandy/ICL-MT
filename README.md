@@ -14,9 +14,9 @@ pip install -r requirements.txt
 
 ## Overview
 
-![](figures/robustness_lacomet.pdf)
+![](figures/fig1.png)
 
-In this paper, we study the impact of carefully chosen in-context demonstrations on the quality of MT outputs. We work with decoder-based LLMs and we study multiple similarity metrics and their impact on the translation task from English to other languages. Given a pool $\mathcal{P} = \{(x_i, y_i)\}_{1 \leq i \leq |\mathcal{P}|}$ and a sentence $x$ to translate in $k$-shot, we find $i_1, \ldots i_k$ such that $\sum_{j=1}^{k}sim(x_{i_j}, x)$ is maximal and use the corresponding pairs and in-context demonstrations. This version of the problem is referred to as **source-to-source (s2s)**. The **source-to-target (s2t)** variant uses $sim(y_{i_j}, x)$ instead of $sim(x_{i_j}, x)$. It is possible to use a mix (**mix**) of both with $\alpha~sim(x_{i_j}, x) + (1 - \alpha)~sim(y_{i_j}, x), \alpha \in ]0, 1[$.
+In this paper, we study the impact of carefully chosen in-context demonstrations on the quality of MT outputs. We work with decoder-based LLMs and we study multiple similarity metrics and their impact on the translation task from English to other languages. Given a pool $\mathcal{P} = \{(x_i, y_i)\}_{1 \leq i \leq |\mathcal{P}|}$ and a sentence $x$ to translate in $k$-shot, we find $i_1, \ldots, i_k$ such that $\sum_{j=1}^{k}sim(x_{i_j}, x)$ is maximal and use the corresponding pairs and in-context demonstrations. This version of the problem is referred to as **source-to-source (s2s)**. The **source-to-target (s2t)** variant uses $sim(y_{i_j}, x)$ instead of $sim(x_{i_j}, x)$. It is possible to use a mix (**mix**) of both with $\alpha~sim(x_{i_j}, x) + (1 - \alpha)~sim(y_{i_j}, x), \alpha \in ]0, 1[$.
 
 We consider sentence embeddings (SE) based similarity metrics (cosine similarity between sentence representations): [SONAR](https://arxiv.org/abs/2308.11466), [Cohere (Embed V3)](https://cohere.com/blog/introducing-embed-v3), [LaBSE](https://aclanthology.org/2022.acl-long.62.pdf), [Laser 2]() and [E5](https://arxiv.org/pdf/2212.03533). Additionally, we include [BLOOM 7B1](https://huggingface.co/bigscience/bloom-7b1) based embeddings obtained by considering the token-wise average hidden state or the last token's hidden state at the first, the middle or the last layer.
 
