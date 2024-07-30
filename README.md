@@ -48,7 +48,7 @@ We evaluate the translations using a separate code with [COMET 22](https://huggi
 
 ## Quickstart
 
-A quick usage of this codebase can involve translating from English to Swahili with [gemma-2b](https://huggingface.co/google/gemma-2b), in 10-shot. We can do it in `s2s` (or in `mix`, by adding `--alpha 0.5` for example) with few-shot examples selected by `SONAR` embeddings. When located in `ICL-MT`, you can use the following command.
+A quick usage of this codebase involves translating from English to Swahili with [gemma-2b](https://huggingface.co/google/gemma-2b), in 10-shot. We can do it in `s2s` (or in `mix`, by adding `--alpha 0.5` for example) with few-shot examples selected by `SONAR` embeddings. When located in `ICL-MT`, you can use the following command.
 
 ```
 torchrun \
@@ -71,11 +71,11 @@ torchrun \
     --repetition_penalty 1.0\
     --max_samples 1012\
     --strategy SONAR\
-    --output_path ./out/gemma-2b/$STRATEGY\
+    --output_path ./out/gemma-2b/SONAR\
     --format s2s\
     --use_vllm\
 ```
-`--max_samples` indicates the number of `devtest` sentences to translate, it is useful for debugging or to quickly get some results. `--data_path` is the path to the pre-computed representations of the sentences. This code will create folder named after the translation direction in `--output_path` (`Eng_to_Swh` in this case) in which there will be the JSON containing the translations. You can use other launchers such as `accelerate`, `python -m torch.distributed.launch`, `python` etc.
+`--max_samples` indicates the number of `devtest` sentences to translate, it is useful for debugging or to quickly get some results. `--data_path` is the path to the pre-computed representations of the sentences. This code will create a folder named after the translation direction in `--output_path` (`Eng_to_Swh` in this case) in which there will be the JSON containing the translations. You can use other launchers such as `accelerate`, `python -m torch.distributed.launch`, `python` etc.
 
 We can evaluate the translations with `Language-Aware COMET` using the following command.
 
