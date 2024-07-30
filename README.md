@@ -16,7 +16,7 @@ pip install -r requirements.txt
 
 ![](figures/fig1.png)
 
-In this paper, we study the impact of carefully chosen in-context demonstrations on the quality of MT outputs. We work with decoder-based LLMs and we study multiple similarity metrics and their impact on the translation task from English to other languages. Given a pool $\mathcal{P} = \{(x_i, y_i)\}_{1 \leq i \leq |\mathcal{P}|}$ and a sentence $x$ to translate in $k$-shot, we find $i_1, \ldots, i_k$ such that $\sum_{j=1}^{k}sim(x_{i_j}, x)$ is maximal and use the corresponding pairs and in-context demonstrations. This version of the problem is referred to as **source-to-source (s2s)**. The **source-to-target (s2t)** variant uses $sim(y_{i_j}, x)$ instead of $sim(x_{i_j}, x)$. It is possible to use a mix (**mix**) of both with $\alpha~sim(x_{i_j}, x) + (1 - \alpha)~sim(y_{i_j}, x), \alpha \in ]0, 1[$.
+In this paper, we study the impact of carefully chosen in-context demonstrations on the quality of MT outputs. We work with decoder-based LLMs and we study multiple similarity metrics and their impact on the translation task from English to other languages. Given a pool $\mathcal{P} = \{(x_i, y_i) : 1 \leq i \leq |\mathcal{P}| \}$  and a sentence $x$ to translate in $k$-shot, we find $i_1, \ldots, i_k$ such that $\sum_{1 \leq j \leq k}sim(x_{i_j}, x)$ is maximum and use the corresponding pairs and in-context demonstrations. This version of the problem is referred to as **source-to-source (s2s)**. The **source-to-target (s2t)** variant uses $sim(y_{i_j}, x)$ instead of $sim(x_{i_j}, x)$. It is possible to use a mix (**mix**) of both with $\alpha~sim(x_{i_j}, x) + (1 - \alpha)~sim(y_{i_j}, x), \alpha \in ]0, 1[$.
 
 We consider sentence embeddings (SE) based similarity metrics (cosine similarity between sentence representations): [SONAR](https://arxiv.org/abs/2308.11466), [Cohere (Embed V3)](https://cohere.com/blog/introducing-embed-v3), [LaBSE](https://aclanthology.org/2022.acl-long.62.pdf), [Laser 2]() and [E5](https://arxiv.org/pdf/2212.03533). Additionally, we include [BLOOM 7B1](https://huggingface.co/bigscience/bloom-7b1) based embeddings obtained by considering the token-wise average hidden state or the last token's hidden state at the first, the middle or the last layer.
 
@@ -28,7 +28,7 @@ There is also the possibility to jointly use a sentence embedding method with Bm
 
 In our experiments with scaling the pool, we worked with 2 datasets, one for [French](https://huggingface.co/datasets/ArmelRandy/nllb_en_fr_20K) and the other for [Swahili](https://huggingface.co/datasets/ArmelRandy/nllb_en_sw_20K). We embedded them with `SONAR` and stored them in `data/flores`. In `main.py`, you can use the option `augment_pool` to add an extension the FLORES-200 `dev` set, `pool_name` is the name of the `.bin` file containing the vector representations of the extension's sentences (required for SE based retrieval). `pool_dataset_name_or_path` is the path to the dataset on [Hugging Face](https://huggingface.co/datasets) (it should contain 2 columns, each named after the code of the language in which the content is written e.g. `en` for English, `fr` for French, `sw` for Swahili). `pool_size` is the total size of `dev + pool extension`.
 
-The implementation supports Hugging Face's naming convention for LLMs. It uses `generate` (though it might by pretty slow) and [vllm](https://github.com/vllm-project/vllm) (recommended) via the argument `--use_vllm`. We have a list of supported templates in `templates.py` but we recommend the template `11`:
+The implementation supports [Hugging Face](https://huggingface.co/models)'s naming convention for LLMs. It uses `generate` (though it might by pretty slow) and [vllm](https://github.com/vllm-project/vllm) (recommended) via the argument `--use_vllm`. We have a list of supported templates in `templates.py` but we recommend the template `11`:
 
 ```
 English Sentence
@@ -43,12 +43,12 @@ French translation
 
 ## Evaluation
 
-We evaluate the translations using a separate code with [COMET 22](https://huggingface.co/Unbabel/wmt22-comet-da), BLEU and chrF++. This work introduces `Language-Aware COMET` which is a variant of COMET robust to empty translations and translations in the incorrect target language. This variant sets the COMET scores of such translations to zero. For this purpose, we use [FastText](https://huggingface.co/facebook/fasttext-language-identification) for LID. The evaluation script is `comet_eval.py`
+We evaluate the translations using a separate code with [COMET 22](https://huggingface.co/Unbabel/wmt22-comet-da), BLEU and chrF++. This work introduces **Language-Aware COMET (laCOMET)** which is a variant of COMET robust to empty translations and translations in the incorrect target language. This variant sets the COMET scores of such translations to zero. For this purpose, we use [FastText](https://huggingface.co/facebook/fasttext-language-identification) for LID. The evaluation script is `comet_eval.py`. You can obviously evaluate your generations with classic metrics such as BLEU and chrF++ which are both supported by [sacrebleu](https://github.com/mjpost/sacrebleu).
 
 
 ## Quickstart
 
-A quick usage of this codebase can involve translating from English to Swahili with [gemma-2b](https://huggingface.co/google/gemma-2b), in 10-shot. We can do it in `s2s` (or in `mix`, by adding `--alpha 0.5` for example) with few-shot examples selected by `SONAR` embeddings. When located in ``, you can use the following command.
+A quick usage of this codebase can involve translating from English to Swahili with [gemma-2b](https://huggingface.co/google/gemma-2b), in 10-shot. We can do it in `s2s` (or in `mix`, by adding `--alpha 0.5` for example) with few-shot examples selected by `SONAR` embeddings. When located in `ICL-MT`, you can use the following command.
 
 ```
 torchrun \
@@ -75,7 +75,7 @@ torchrun \
     --format s2s\
     --use_vllm\
 ```
-`--max_samples` indicates the number of `devtest` sentences to translate, it is useful for debugging or to quickly get some results. `--data_path` is the path to the pre-computed representations of the sentences. This code will create folder named after the translation direction in `--output_path` (`Eng_to_Swh` in this case) in which there will be the JSON containing the translations.
+`--max_samples` indicates the number of `devtest` sentences to translate, it is useful for debugging or to quickly get some results. `--data_path` is the path to the pre-computed representations of the sentences. This code will create folder named after the translation direction in `--output_path` (`Eng_to_Swh` in this case) in which there will be the JSON containing the translations. You can use other launchers such as `accelerate`, `python -m torch.distributed.launch`, `python` etc.
 
 We can evaluate the translations with `Language-Aware COMET` using the following command.
 
