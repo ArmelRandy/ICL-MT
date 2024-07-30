@@ -1,0 +1,23 @@
+cohere
+unbabel-comet
+fasttext
+sentence-transformers
+fairseq==0.12.2
+fairseq2
+sonar-space
+# conda install -c conda-forge libsndfile==1.0.31 for sonar (in addition to fairseq2)
+sacrebleu
+rouge-score
+vllm
+transformers
+accelerate
+datasets
+tqdm
+rank_bm25
+spacy
+grakel
+sacremoses
+numpy
+scikit-learn
+bitsandbytes
+vendi_score
