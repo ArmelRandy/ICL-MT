@@ -1,14 +1,5 @@
-from transformers import (
-    AutoModel,
-    AutoTokenizer,
-)
-from templates import Template
 import json
 import os
-
-from sklearn.metrics import pairwise_distances
-import matplotlib.pyplot as plt
-import numpy as np
 
 MAPPING_LANG_TO_KEY = {}
 with open(

@@ -35,7 +35,6 @@ def parse_args():
     parser.add_argument(
         "--data_path",
         type=str,
-        #default="/home/azebazed/experiments/data/flores",
         default="./data/flores",
         help="Path to the folders where the embedding are stored by language name.",
     )

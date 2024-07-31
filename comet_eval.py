@@ -188,7 +188,6 @@ def main(args):
                         d_comet[method][strategy][k][seed] = score
 
         print(d_comet)
-        # with open(f"./{data_dir}/{direction}_scores.json", "w") as fout:
         if language_aware:
             with open(
                 os.path.join(args.output_dir, f"{direction}_scores.json"), "w"
