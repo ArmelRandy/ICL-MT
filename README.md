@@ -158,7 +158,7 @@ All the outputs of our experiments can be found in the folder `generations`.
 
 ## Closing thoughts
 
-This repository is an easy tool to perform few-shot machine translation with example selection via similarity search. Although all of our experiments involved translating from English to French, German, Swahili or Wolof; you can use this code to translate from English to any FLORES-200 language (see ./data/flores200.jsonl). This is possible with Template 11 and in `s2s`.
+This repository is an easy tool to perform few-shot machine translation with example selection via similarity search. Although all of our experiments involved translating from English to French, German, Swahili or Wolof; you can use this code to translate from English to any FLORES-200 language (see `./data/flores200.jsonl`). This is possible with Template 11 and in `s2s`.
 
 ## Citations
 
