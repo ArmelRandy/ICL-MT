@@ -167,6 +167,6 @@ If you found this repository or its outputs to be useful, don't hesitate to cite
 ```
 ```
 
-## Aknowledgments
+## Acknowledgments
 
 This work was made possible by the INRIA Paris' NLP research team, [ALMAnaCH](https://almanach.inria.fr/index-en.html).
