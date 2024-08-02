@@ -1,6 +1,6 @@
 # Official Repo of Example Selection via Similarity Search
 
-Official implementation of the paper [Example Selection via Similarity Search improves Low-resource Machine Translation]() with code, scripts and outputs.
+Official implementation of the paper [Example Selection via Similarity Search improves Low-resource Machine Translation](http://arxiv.org/abs/2408.00397) with code, scripts and outputs.
 
 ## Setup
 
@@ -165,6 +165,15 @@ This repository is an easy tool to perform few-shot machine translation with exa
 If you found this repository or its outputs to be useful, don't hesitate to cite.
 
 ```
+@misc{zebaze2024incontextexampleselectionsimilarity,
+      title={In-Context Example Selection via Similarity Search Improves Low-Resource Machine Translation}, 
+      author={Armel Zebaze and Benoît Sagot and Rachel Bawden},
+      year={2024},
+      eprint={2408.00397},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2408.00397}, 
+}
 ```
 
 ## Acknowledgments
