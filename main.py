@@ -38,6 +38,13 @@ def parse_args():
         default="./data/flores",
         help="Path to the folders where the embedding are stored by language name.",
     )
+    parser.add_argument(
+        "--dataset_name_or_path",
+        type=str,
+        choices=["flores", "tico", "ood"],
+        default="flores",
+        help="Name of the dataset of interest e.g. flores, tico, ood."
+    )
     parser.add_argument("--src", type=str, default="English", help="Source language.")
     parser.add_argument("--tgt", type=str, default="French", help="Target language.")
     parser.add_argument(
@@ -155,13 +162,29 @@ if __name__ == "__main__":
     data_path = (
         args.data_path
         if args.data_path
-        else os.path.join(os.path.dirname(__file__), "data", "flores")
+        else os.path.join(os.path.dirname(__file__), "data", args.dataset_name_or_path)
     )
     src = args.src
     tgt = args.tgt
-    ds_src = load_dataset("facebook/flores", MAPPING_LANG_TO_KEY[src])
-    ds_tgt = load_dataset("facebook/flores", MAPPING_LANG_TO_KEY[tgt])
-
+    if args.dataset_name_or_path == "flores":
+        print("Using flores ...")
+        ds_src = load_dataset("facebook/flores", MAPPING_LANG_TO_KEY[src])
+        ds_tgt = load_dataset("facebook/flores", MAPPING_LANG_TO_KEY[tgt])
+    elif args.dataset_name_or_path == "tico":
+        print("Using tico ...")
+        from tico import get_datasets
+        assert src == "English", "This dataset only supports translation from English."
+        ds_src, ds_tgt = get_datasets(tgt)
+    elif args.dataset_name_or_path == "ood":
+        print("Using ood ...")
+        from tico import get_datasets
+        assert src == "English", "This dataset only supports translation from English."
+        ds_src, ds_tgt = get_datasets(tgt)
+        ds_src_flores = load_dataset("facebook/flores", MAPPING_LANG_TO_KEY[src])
+        ds_tgt_flores = load_dataset("facebook/flores", MAPPING_LANG_TO_KEY[tgt])
+        ds_src["dev"] = ds_src_flores["dev"]
+        ds_tgt["dev"] = ds_tgt_flores["dev"]
+    
     template = get_template(args.template_key, src, tgt)
     stop_words = [tokenizer.eos_token]
     if template.prefix.strip() != "":
@@ -254,23 +277,24 @@ if __name__ == "__main__":
         ).reshape(len(ds_src["dev"]), -1)
         # Embedding of the sentences in the target language that will be used as demonstrations
         # for ICL i.e. `dev`
-        X_tgt_dev = np.fromfile(
-            os.path.join(
-                data_path,
-                f"{MAPPING_LANG_TO_KEY[tgt].split('_')[0]}/{strategy}/dev.bin",
-            ),
-            dtype=float if "Cohere" in strategy else np.float32,
-            count=-1,
-        ).reshape(len(ds_tgt["dev"]), -1)
-        # Embedding of the translation of our sentences of interest
-        X_tgt_devtest = np.fromfile(
-            os.path.join(
-                data_path,
-                f"{MAPPING_LANG_TO_KEY[tgt].split('_')[0]}/{strategy}/devtest.bin",
-            ),
-            dtype=float if "Cohere" in strategy else np.float32,
-            count=-1,
-        ).reshape(len(ds_tgt["devtest"]), -1)
+        if args.format in ["s2t", "t2t", "t2s"]:
+            X_tgt_dev = np.fromfile(
+                os.path.join(
+                    data_path,
+                    f"{MAPPING_LANG_TO_KEY[tgt].split('_')[0]}/{strategy}/dev.bin",
+                ),
+                dtype=float if "Cohere" in strategy else np.float32,
+                count=-1,
+            ).reshape(len(ds_tgt["dev"]), -1)
+            # Embedding of the translation of our sentences of interest
+            X_tgt_devtest = np.fromfile(
+                os.path.join(
+                    data_path,
+                    f"{MAPPING_LANG_TO_KEY[tgt].split('_')[0]}/{strategy}/devtest.bin",
+                ),
+                dtype=float if "Cohere" in strategy else np.float32,
+                count=-1,
+            ).reshape(len(ds_tgt["devtest"]), -1)
         # If there is a complementary pool
         if args.augment_pool:
             # Embeddding of the sentences of the pool written in the source language
@@ -744,6 +768,7 @@ if __name__ == "__main__":
             repetition_penalty=args.repetition_penalty,
             use_beam_search=not args.do_sample,
             skip_special_tokens=True,
+            stop=["\n###"]
             # stop_token_ids=[tokenizer.eos_token_id],
         )
     else:
